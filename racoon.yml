@@ -4,16 +4,35 @@
   handlers:
   - include: handlers.yml
 
-  tasks: 
+  tasks:
+  - name: Install ipsec-tools and racoon
+    become: yes
+    apt: name={{item}}
+         state=present
+    with_list:
+      - ipsec-tools
+      - racoon
 
-  - template: src=templates/ipsec-tools.conf dest=/etc/ipsec-tools.conf
+  - name: Install ipsec-tools.conf
+    become: yes
+    template: src=templates/ipsec-tools.conf dest=/etc/ipsec-tools.conf
     notify:
     - setkey restart
-  
-  - template: src=templates/racoon.conf dest=/etc/racoon/racoon.conf
+
+  - name: install racoon.conf
+    template: src=templates/racoon.conf dest=/etc/racoon/racoon.conf
+    become: yes
     notify:
     - racoon reload
-  
-  - template: src=templates/psk.txt dest=/etc/racoon/psk.txt
+
+  - name: install psk.txt
+    template: src=templates/psk.txt dest=/etc/racoon/psk.txt
+    become: yes
     notify:
     - racoon reload
+
+  - name: enable racoon service
+    become: yes
+    service: name=racoon
+             state=started
+             enabled=yes
