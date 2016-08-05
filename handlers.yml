@@ -1,7 +1,7 @@
 - name: setkey restart
+  become: yes
   service: name=setkey state=restarted
-  sudo: yes
 
 - name: racoon reload
+  become: yes
   service: name=racoon state=reloaded
-  sudo: yes
